@@ -1,0 +1,13 @@
+html,
+body,
+#app {
+  height: 100%;
+}
+
+#app {
+  overflow: hidden;
+}
+
+body {
+  margin: 0
+}
