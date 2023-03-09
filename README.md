@@ -1,5 +1,9 @@
 # 地图下钻，标注
 
+演示GIF
+![](src/assets/demo.gif)
+
+
 可视化（又名：大屏，驾驶舱等）常有的需求  
 最简单的实现方式就是基于echarts在有 geojson 数据的情况下可以快速实现  
 > https://geojson.org/
