@@ -44,6 +44,7 @@ let options = {
     },
     geo: [
         {
+            zoom: 0.1,
             tooltip: {
                 show: false
             },
@@ -56,10 +57,11 @@ let options = {
                     borderColor: "#F07B91"
                 }
             },
-            map: ""
+            map: "",
         }
     ],
-    series: {
+    series:
+    {
         type: 'effectScatter',
         coordinateSystem: 'geo',
         geoIndex: 0,
@@ -82,13 +84,12 @@ let options = {
             [116.40, 39.91, 100, "北京"],
             [120.21, 30.25, 50, "杭州"],
         ]
-    }
+    },
 }
 
 let loading = ref(true)
 let status = ref("初始化中...")
 let queue: Ref<Array<string>> = ref([])
-
 
 
 function initChart() {
@@ -97,7 +98,7 @@ function initChart() {
     renderMapChart(defaultCity.name)
 
     // 绑定图表点击事件
-    mainChart.on('click', 
+    mainChart.on('click',
         throttle((params) => {
             renderMapChart(params.name)
         })
@@ -118,19 +119,38 @@ function initChart() {
 function renderMapChart(name: string) {
     getGeoJson(name).then(res => {
         if (res) {
-            echarts.registerMap(name, { geoJSON: res, specialAreas: {} })
 
-            options.geo[0].map = name
+            // 通过改变Zoom来实现5.X版本 geo 切换时的动画效果
+            if (queue.value.length >= 1) {
+                options.geo[0].zoom = 0.01
+                mainChart.setOption(options)
 
-            mainChart.setOption(options)
+                setTimeout(() => {
+
+                    echarts.registerMap(name, { geoJSON: res, specialAreas: {} })
+
+                    options.geo[0].map = name
+                    options.geo[0].zoom = 1
+                    mainChart.setOption(options)
+                }, 500);
+            } else {
+                echarts.registerMap(name, { geoJSON: res, specialAreas: {} })
+                options.geo[0].map = name 
+                options.geo[0].zoom = 1
+                mainChart.setOption(options)
+            }
+
+            if (name != queue.value[queue.value.length - 1]) {
+                queue.value.push(name)
+            }
 
         }
     })
 }
 
+
 // 返回上一级
 function handlePre() {
-    console.log(queue.value);
     if (queue.value.length > 1) {
         queue.value.pop()
         renderMapChart(queue.value[queue.value.length - 1])
@@ -178,9 +198,9 @@ async function getGeoJson(name: string) {
         if (res.status == 200) {
             result = res.data
 
-            if (name != queue.value[queue.value.length - 1]) {
-                queue.value.push(name)
-            }
+            // if (name != queue.value[queue.value.length - 1]) {
+            //     queue.value.push(name)
+            // }
             loading.value = false
         }
     }).catch(err => {

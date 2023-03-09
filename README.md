@@ -23,6 +23,7 @@
 
 本项目中 用数组保存了下钻过程 来实现返回上级功能  
 geojson 使用 DataV 测试链接，可能会失效
+通过改变 options.geo zoom 属性来实现5.X版本地图切换的动画效果，详见源码
 
 其余具体配置可在 echarts 文档查询
 > https://echarts.apache.org/zh/option.html#title
